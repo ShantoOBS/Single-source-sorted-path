@@ -1,0 +1,84 @@
+// single source sorted path on weighted directed graph by Bellman-Ford Algorithm
+#include<bits/stdc++.h>
+using namespace std;
+
+vector<int> dist; // final array // distance array
+
+
+int main()
+{
+    int v,e;
+    cout<<"Number of vertices and edges: ";
+    cin>>v>>e;
+
+    vector<tuple<int,int,int> > edgeList;
+
+    for(int i=0;i<e;i++)
+    {
+        int sc,des,wt;
+        cout<<"Enter edge(source,destination, weight) "<<i+1<<endl;
+        cin>>sc>>des>>wt;
+        edgeList.push_back(make_tuple(sc,des,wt));
+    }
+
+    // print all of the edge list
+    for(auto i:edgeList)
+    {
+        cout<<get<0>(i)<<" "<<get<1>(i)<<" "<<get<2>(i)<<endl;
+    }
+    // Bellman-Ford algorithm
+    // Step 1: Initialize distances from src to all other
+    // vertices as INFINITE
+
+    dist.resize(v,10000); // can't use INT_MAX bcz adding with INT_MAX formed negative value;
+
+    int s =2; // source node = 2
+
+    dist[s] = 0;
+     // Step 2: Relax all edges |V| - 1 times. A simple
+    // shortest path from src to any other vertex can have
+    // at-most |V| - 1 edges
+
+    for(int i=0;i<v-1;i++)
+    {
+        for(auto v:edgeList)
+        {
+            int sc = get<0>(v);
+            int des = get<1>(v);
+            int wt = get<2>(v);
+
+            int new_sum_wt_s2d = dist[sc] + wt;
+            if(new_sum_wt_s2d < dist[des])
+            {
+                dist[des] = new_sum_wt_s2d;
+            }
+        }
+    }
+
+    // check for negative edge, 1 last check
+    // Step 3: check for negative-weight cycles.  The above
+    // step guarantees shortest distances if graph doesn't
+    // contain negative weight cycle.  If we get a shorter
+    // path, then there is a cycle.
+
+    for(auto v:edgeList)
+    {
+            int sc = get<0>(v);
+            int des = get<1>(v);
+            int wt = get<2>(v);
+
+            int new_sum_wt_s2d = dist[sc] + wt;
+            if(new_sum_wt_s2d < dist[des])
+            {
+                cout<<"Negative weight exists";
+                exit(0);
+            }
+    }
+
+    // If negative weight weight don't exist, print the final array
+    cout<<"Final distance from source: "<<endl;
+    for(auto i:dist)
+    {
+        cout<<i<<" ";
+    }
+}
